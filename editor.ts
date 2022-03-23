@@ -3,6 +3,7 @@ import { gutter, GutterMarker, lineNumbers } from "@codemirror/gutter";
 import {markdown} from "@codemirror/lang-markdown";
 import { RangeSet } from "@codemirror/rangeset";
 import { StateEffect, StateField } from "@codemirror/state";
+import { ViewPlugin, ViewUpdate } from "@codemirror/view";
 
 // https://github.com/codemirror/website/blob/master/site/examples/gutter/gutters.ts
 
@@ -72,9 +73,36 @@ const usesGutter = [
   })
 ]
 
+const combinedView = ViewPlugin.fromClass(class {
+  constructor(view) {
+  }
+
+  update(update: ViewUpdate) {
+    //console.log(update.state.doc.length);
+    let uses = update.state.field(usesState);
+    console.log(uses.size);
+    let cursor = uses.iter();
+    let texts = [];
+    while (!!cursor.value) {
+      let line = update.state.doc.lineAt(cursor.from);
+      texts.push(line.text);
+      cursor.next();
+    }
+    let joined = texts.join('\n');
+    console.log(joined);
+    const textArea = document.getElementById("combined");
+    textArea.textContent = joined;
+    navigator.clipboard.writeText(joined);
+  }
+
+  destroy() {}
+})
+
 let editor = new EditorView({
   state: EditorState.create({
-    extensions: [usesGutter, basicSetup, markdown(), emptyLineGutter]
+    doc: "- Feedback 1\n- `Feedback 2`\n- *Feedback 3*",
+    extensions: [usesGutter, basicSetup, markdown(), emptyLineGutter,
+      combinedView]
   }),
   parent: document.querySelector("#editor")
 });
