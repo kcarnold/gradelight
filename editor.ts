@@ -7,17 +7,6 @@ import { ViewPlugin, ViewUpdate } from "@codemirror/view";
 
 // https://github.com/codemirror/website/blob/master/site/examples/gutter/gutters.ts
 
-const emptyMarker = new class extends GutterMarker {
-  toDOM() { return document.createTextNode("≠")}
-}
-
-const emptyLineGutter = gutter({
-  lineMarker(view, line) {
-    return line.from === line.to ? emptyMarker : null
-  },
-  initialSpacer: () => emptyMarker
-});
-
 const usesEffect = StateEffect.define<{pos: number, on: boolean}>({
   map: (val, mapping) => ({pos: mapping.mapPos(val.pos), on: val.on})
 })
@@ -101,7 +90,7 @@ const combinedView = ViewPlugin.fromClass(class {
 let editor = new EditorView({
   state: EditorState.create({
     doc: "- Feedback 1\n- `Feedback 2`\n- *Feedback 3*",
-    extensions: [usesGutter, basicSetup, markdown(), emptyLineGutter,
+    extensions: [usesGutter, basicSetup, markdown(),
       combinedView]
   }),
   parent: document.querySelector("#editor")
