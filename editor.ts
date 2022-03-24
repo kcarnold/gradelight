@@ -22,6 +22,7 @@ const usesEffect = StateEffect.define<{pos: number, on: boolean}>({
   map: (val, mapping) => ({pos: mapping.mapPos(val.pos), on: val.on})
 })
 
+// FIXME: removing a region (by pasting over it, for example) doesn't seem to remove the markers.
 const usesState = StateField.define<RangeSet<GutterMarker>>({
   create() { return RangeSet.empty },
   update(set, transaction) {
@@ -92,7 +93,6 @@ const combinedView = ViewPlugin.fromClass(class {
     console.log(joined);
     const textArea = document.getElementById("combined");
     textArea.textContent = joined;
-    navigator.clipboard.writeText(joined);
   }
 
   destroy() {}
