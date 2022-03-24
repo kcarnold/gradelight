@@ -1,14 +1,14 @@
 import { EditorState, EditorView, basicSetup } from "@codemirror/basic-setup";
 import { gutter, GutterMarker, lineNumbers } from "@codemirror/gutter";
-import {markdown} from "@codemirror/lang-markdown";
+import { markdown } from "@codemirror/lang-markdown";
 import { RangeSet } from "@codemirror/rangeset";
 import { StateEffect, StateField } from "@codemirror/state";
 import { ViewPlugin, ViewUpdate } from "@codemirror/view";
 
 // https://github.com/codemirror/website/blob/master/site/examples/gutter/gutters.ts
 
-const usesEffect = StateEffect.define<{pos: number, on: boolean}>({
-  map: (val, mapping) => ({pos: mapping.mapPos(val.pos), on: val.on})
+const usesEffect = StateEffect.define<{ pos: number, on: boolean }>({
+  map: (val, mapping) => ({ pos: mapping.mapPos(val.pos), on: val.on })
 })
 
 // FIXME: removing a region (by pasting over it, for example) doesn't seem to remove the markers.
@@ -19,9 +19,9 @@ const usesState = StateField.define<RangeSet<GutterMarker>>({
     for (let e of transaction.effects) {
       if (!e.is(usesEffect)) continue;
       if (e.value.on) {
-        set = set.update({add: [usesMarker.range(e.value.pos)]});
+        set = set.update({ add: [usesMarker.range(e.value.pos)] });
       } else {
-        set = set.update({filter: from => from != e.value.pos})
+        set = set.update({ filter: from => from != e.value.pos })
       }
     }
     return set;
@@ -31,14 +31,14 @@ const usesState = StateField.define<RangeSet<GutterMarker>>({
 function toggleUse(view: EditorView, pos: number) {
   let uses = view.state.field(usesState);
   let hasUse = false;
-  uses.between(pos, pos, () => {hasUse = true});
+  uses.between(pos, pos, () => { hasUse = true });
   view.dispatch({
-    effects: usesEffect.of({pos, on: !hasUse})
+    effects: usesEffect.of({ pos, on: !hasUse })
   });
 }
 
 const usesMarker = new class extends GutterMarker {
-  toDOM() { return document.createTextNode(">")}
+  toDOM() { return document.createTextNode(">") }
 }
 
 const usesGutter = [
@@ -84,7 +84,7 @@ const combinedView = ViewPlugin.fromClass(class {
     textArea.textContent = joined;
   }
 
-  destroy() {}
+  destroy() { }
 })
 
 let editor = new EditorView({
