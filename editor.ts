@@ -69,30 +69,20 @@ const usesGutter = [
   }),
 ];
 
-const combinedView = ViewPlugin.fromClass(
-  class {
-    constructor(view) {}
-
-    update(update: ViewUpdate) {
-      //console.log(update.state.doc.length);
-      let uses = update.state.field(usesState);
-      console.log(uses.size);
-      let cursor = uses.iter();
-      let texts = [];
-      while (!!cursor.value) {
-        let line = update.state.doc.lineAt(cursor.from);
-        texts.push(line.text);
-        cursor.next();
-      }
-      let joined = texts.join("\n");
-      console.log(joined);
-      const textArea = document.getElementById("combined");
-      textArea.textContent = joined;
-    }
-
-    destroy() {}
+const combinedView = EditorView.updateListener.of((update: ViewUpdate) => {
+  // Note: a change in gutter marks does *not* set update.docChanged.
+  let uses = update.state.field(usesState);
+  let cursor = uses.iter();
+  let texts = [];
+  while (!!cursor.value) {
+    let line = update.state.doc.lineAt(cursor.from);
+    texts.push(line.text);
+    cursor.next();
   }
-);
+  let joined = texts.join("\n");
+  const textArea = document.getElementById("combined");
+  textArea.textContent = joined;
+});
 
 let editor = new EditorView({
   state: EditorState.create({
