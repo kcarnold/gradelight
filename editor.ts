@@ -80,8 +80,8 @@ const combinedView = EditorView.updateListener.of((update: ViewUpdate) => {
     cursor.next();
   }
   let joined = texts.join("\n");
-  const textArea = document.getElementById("combined");
-  textArea.textContent = joined;
+  const textArea = (document.getElementById("combined") as HTMLInputElement);
+  textArea.value = joined;
 });
 
 let editor = new EditorView({
